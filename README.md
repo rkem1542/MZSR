@@ -141,6 +141,11 @@ for our pretrained model, just set model=2 (I've slightly modified it)
 ```
 python main.py --gpu [gpu_number] --model 2 --num 10
 ```
+if you want to add noise to LQ_son
+```
+python main.py --noise_std 0.0125 --gpu [gpu_number] --model 2 --num 10
+
+```
 [Options]
 ```
 
