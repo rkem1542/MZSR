@@ -111,9 +111,39 @@ Download training dataset [DIV2K](https://data.vision.ee.ethz.ch/cvl/DIV2K/).
 
 #### Train MZSR
 Make sure all configurations in **config.py** are set.
+#### modified by sjyang
+1) Large-Scale Training: dataset = (HQ,LQ) -> run MainSR/generate_TFRecord_MZSR.py
+code for generate tfrecord data file for Large-Scale Training
+```
+python generate_TFRecord_MZSR.py --labelpath [HQ_path] --LRpath [LQ_path] --tfrecord [file path/name for saving]
+```
+when ready for data tfrecord file following above, run Large-Scale Training/main.py
+before running, make sure that you've modified NUM_OF_DATA = [num of the inputs(you can check/confirm this when you make the tfrecord file)] 
+and TF_RECORD_PATH = [tfrecord file path]
 
+code for running Large-Scale-Training
+```
+python main.py --gpu [gpu_number]
+```
+2) Meta-Learning: dataset = HQ -> run MainSR/generate_TFRecord_MZSR_original.py
+code for generate tfrecord data file for Meta-Learning
+```
+python generate_TFRecord_MZSR_original.py --labelpath [HQ_path] --tfrecord [file path/name for saving]
+```
+after this, modify config.py(TRANS_MODEL,TFRECORD_PATH)
+code for run main.py
+```
+python main.py --train --gpu [gpu_number]
+```
+3) Meta-test
+make sure all in config.py are set(inputpath, gtpath,savepath)
+for our pretrained model, just set model=2 (I've slightly modified it)
+```
+python main.py --gpu [gpu_number] --model 2 --num 10
+```
 [Options]
 ```
+
 python main.py --train --gpu [GPU_number] --trial [Trial of your training] --step [Global step]
 
 --train: Flag in order to train.
