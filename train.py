@@ -4,7 +4,7 @@ import time
 from config import *
 
 class Train(object):
-    def __init__(self, trial, step, size, scale_list, meta_batch_size, meta_lr, meta_iter, task_batch_size, task_lr, task_iter, data_generator, checkpoint_dir, conf):
+    def __init__(self, noise_std, trial, step, size, scale_list, meta_batch_size, meta_lr, meta_iter, task_batch_size, task_lr, task_iter, data_generator, checkpoint_dir, conf):
         print('[*] Initialize Training')
         self.trial = trial
         self.step=step
@@ -12,7 +12,7 @@ class Train(object):
         self.WIDTH=size[1]
         self.CHANNEL=size[2]
         self.scale_list=scale_list
-
+        self.noise_std = noise_std
         self.META_BATCH_SIZE = meta_batch_size
         self.META_LR = meta_lr
         self.META_ITER = meta_iter
@@ -43,6 +43,9 @@ class Train(object):
 
         def task_metalearn(inp):
             inputa, inputb, labela, labelb = inp
+            #for checking the size of the inp
+            print("The size of the inputa and input b is {0} and {1}".format(inputa.shape,inputb.shape))
+            #
             loss_func = tf.losses.absolute_difference
 
             task_outputbs, task_lossesb = [], []
@@ -158,7 +161,7 @@ class Train(object):
             else:
                 print('==================== No model to load ======================================')
 
-            writer = tf.summary.FileWriter('./logs%d' % self.trial, sess.graph)
+            writer = tf.summary.FileWriter('/data3/sjyang/MZSR/logs%d' % self.trial, sess.graph)
 
             print('[*] Training Starts')
 
@@ -167,7 +170,7 @@ class Train(object):
             t2 = time.time()
             while True:
                 try:
-                    inputa, labela, inputb, labelb = self.data_generator.make_data_tensor(sess, self.scale_list, noise_std=0.0)
+                    inputa, labela, inputb, labelb = self.data_generator.make_data_tensor(sess, self.scale_list, noise_std=self.noise_std)
 
                     '''feed & fetch'''
                     feed_dict = {self.inputa: inputa, self.inputb: inputb, self.labela: labela, self.labelb: labelb}

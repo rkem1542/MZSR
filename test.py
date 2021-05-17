@@ -4,17 +4,19 @@ import imageio
 from utils import *
 
 class Test(object):
-    def __init__(self, model_path, save_path,kernel, scale, conf, method_num, num_of_adaptation):
+    def __init__(self, noise_std, model_path, save_path,kernel, scale, conf, method_num, num_of_adaptation):
         methods=['direct', 'direct', 'bicubic', 'direct']
         self.save_results=True
         self.max_iters=num_of_adaptation
         self.display_iter = 1
 
         self.upscale_method= 'cubic'
-        self.noise_level = 0.0
-
+        #self.noise_level = 0.0
+        self.noise_level = noise_std #for real image, refer to ZSSR
+        
         self.back_projection=False
-        self.back_projection_iters=4
+        #self.back_projection_iters=4
+        self.back_projection_iters=0 # for real image, refer to ZSSR
 
         self.model_path=model_path
         self.save_path=save_path
@@ -106,6 +108,7 @@ class Test(object):
     def train(self):
         self.hr_father = self.img
         self.lr_son = imresize(self.img, scale=1/self.scale, kernel=self.kernel, ds_method=self.ds_method)
+        #self.lr_son = imresize(self.img, scale=0.5, kernel=self.kernel, ds_method=self.ds_method)
         self.lr_son = np.clip(self.lr_son + np.random.randn(*self.lr_son.shape) * self.noise_level, 0., 1.)
 
         t1=time.time()
@@ -173,7 +176,8 @@ class Test(object):
 
     def forward_backward_pass(self, input, hr_father):
         ILR = imresize(input, self.scale, hr_father.shape, self.upscale_method)
-
+        #ILR = imresize(input, 2.0, hr_father.shape, self.upscale_method) 
+       
         HR = hr_father[None, :, :, :]
 
         # Create feed dict
@@ -202,7 +206,8 @@ class Test(object):
         self.psnr.append(PSNR)
 
         # 2. Reconstruction MSE
-        self.reconstruct_output = self.forward_pass(self.hr2lr(self.img), self.img.shape)
+        #self.reconstruct_output = self.forward_pass(self.hr2lr(self.img), self.img.shape)
+        self.reconstruct_output = self.forward_pass(self.img, self.img.shape)
         self.mse_rec.append(np.mean((self.img - self.reconstruct_output)**2))
 
         processed_output=np.round(np.clip(self.sr*255, 0., 255.)).astype(np.uint8)

@@ -5,6 +5,8 @@ from utils import *
 from config import *
 import glob
 import scipy.io
+#
+from gkernel import generate_kernel
 
 os.environ['TF_CPP_MIN_LOG_LEVEL']='3'
 os.environ['CUDA_DEVICE_ORDER']='PCI_BUS_ID'
@@ -18,7 +20,7 @@ def main():
         data_generator=dataGenerator.dataGenerator(output_shape=[HEIGHT,WIDTH,CHANNEL], meta_batch_size=META_BATCH_SIZE,
                                                    task_batch_size=TASK_BATCH_SIZE,tfrecord_path=TFRECORD_PATH)
 
-        Trainer = train.Train(trial=args.trial, step=args.step, size=[HEIGHT,WIDTH,CHANNEL],
+        Trainer = train.Train(noise_std=args.noise_std, trial=args.trial, step=args.step, size=[HEIGHT,WIDTH,CHANNEL],
                               scale_list=SCALE_LIST, meta_batch_size=META_BATCH_SIZE, meta_lr=META_LR, meta_iter=META_ITER, task_batch_size=TASK_BATCH_SIZE,
                               task_lr=TASK_LR, task_iter=TASK_ITER, data_generator=data_generator, checkpoint_dir=CHECKPOINT_DIR, conf=conf)
 
@@ -28,26 +30,30 @@ def main():
             print('Direct Downscaling, Scaling factor x2 Model')
             model_path = 'Model/Directx2'
         elif args.model ==1:
-            print('Direct Downscaling, Multi-scale Model')
-            model_path = 'Model/Multi-scale'
-        elif args.model ==2:
             print('Bicubic Downscaling, Scaling factor x2 Model')
             model_path = 'Model/Bicubicx2'
+        elif args.model ==2:
+            print('Bicubic Downscaling, Scaling factor x2 Model')
+            model_path = '/data3/sjyang/MZSR/MZSR_-interp_checkpoint/SR_MetaLearn/Model0/model-100000'
         elif args.model ==3:
             print('Direct Downscaling, Scaling factor x4 Model')
             model_path = 'Model/Directx4'
+        elif args.model ==4:
+            print('Pretrained model, Scaling factor x2 Model')
+            model_path = '~/MZSR/SR/Model0/model-90000'
 
         img_path=sorted(glob.glob(os.path.join(args.inputpath, '*.png')))
         gt_path=sorted(glob.glob(os.path.join(args.gtpath, '*.png')))
 
-        scale=2.0
+        scale=1.0
 
         try:
             kernel=scipy.io.loadmat(args.kernelpath)['kernel']
         except:
             kernel='cubic'
+            #kernel = generate_kernel(k1=scale*2.5, ksize=15) 
 
-        Tester=test.Test(model_path, args.savepath, kernel, scale, conf, args.model, args.num_of_adaptation)
+        Tester=test.Test(args.noise_std, model_path, args.savepath, kernel, scale, conf, args.model, args.num_of_adaptation)
         P=[]
         for i in range(len(img_path)):
             img=imread(img_path[i])

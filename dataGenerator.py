@@ -27,11 +27,13 @@ class dataGenerator(object):
             Kernel = generate_kernel(k1=scale*2.5, ksize=15)
             for idx in range(self.TASK_BATCH_SIZE*2):
                 img_HR=label_train_[t*self.TASK_BATCH_SIZE*2 + idx]
-                clean_img_LR=imresize(img_HR,scale=1./scale, kernel=Kernel)
+                #clean_img_LR=imresize(img_HR,scale=1./scale, kernel=Kernel)
+                clean_img_LR=imresize(img_HR,scale=1, kernel=Kernel) # LQ
 
                 img_LR=np.clip(clean_img_LR+ np.random.randn(*clean_img_LR.shape)*noise_std, 0., 1.)
 
-                img_ILR=imresize(img_LR, scale=scale, output_shape=img_HR.shape, kernel='cubic')
+                #img_ILR=imresize(img_LR, scale=scale, output_shape=img_HR.shape, kernel='cubic')
+                img_ILR=img_LR
 
                 input_task.append(img_ILR)
                 label_task.append(img_HR)

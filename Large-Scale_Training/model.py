@@ -1,4 +1,7 @@
 from ops import *
+#
+#import tensorflow.compat.v1 as tf
+#tf.disable_v2_behavior()
 
 class Weights(object):
     def __init__(self, scope=None):

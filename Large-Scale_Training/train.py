@@ -2,6 +2,10 @@ import time
 import model
 from imresize import imresize
 from utils import *
+#
+#import tensorflow.compat.v1 as tf
+#tf.disable_v2_behavior()
+
 
 class Train(object):
     def __init__(self, trial, step, size, batch_size, learning_rate, max_epoch, tfrecord_path, checkpoint_dir, scale,num_of_data, conf, model_num):
@@ -89,15 +93,15 @@ class Train(object):
 
                     input_bic_=np.zeros(label_train_.shape)
 
-                    for idx in range(len(label_train_)):
-                        input_bic_[idx]=imresize(input_train_[idx], scale=self.scale, kernel='cubic')
-
+                    #for idx in range(len(label_train_)):
+                    #    input_bic_[idx]=imresize(input_train_[idx], scale=self.scale, kernel='cubic')
+                    input_bic_ = input_train_
 
                     sess.run(self.opt, feed_dict={self.input: input_bic_, self.label: label_train_})
 
                     step = step + 1
 
-                    if step % 1000 == 0:
+                    if step % 500 == 0:
                         t1 = t2
                         t2 = time.time()
                         loss_, summary = sess.run([self.loss, self.summary_op],
@@ -132,7 +136,8 @@ class Train(object):
 
         img = parsed_features['image']
         img = tf.divide(tf.cast(tf.decode_raw(img, tf.uint8), tf.float32), 255.)
-        img=  tf.reshape(img,[self.HEIGHT//self.scale,self.WIDTH//self.scale,self.CHANNEL])
+        #img=  tf.reshape(img,[self.HEIGHT//self.scale,self.WIDTH//self.scale,self.CHANNEL])
+        img = tf.reshape(img,[self.HEIGHT, self.WIDTH, self.CHANNEL])
 
         label = parsed_features['label']
         label = tf.divide(tf.cast(tf.decode_raw(label, tf.uint8), tf.float32), 255.)

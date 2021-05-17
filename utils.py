@@ -87,8 +87,9 @@ def modcrop(imgs, modulo):
     return out
 
 def back_projection(y_sr, y_lr, down_kernel, up_kernel, sf=None, ds_method='direct'):
-    y_sr += imresize(y_lr - imresize(y_sr, scale=1.0/sf, output_shape=y_lr.shape, kernel=down_kernel, ds_method=ds_method),
-                     scale=sf,
-                     output_shape=y_sr.shape,
-                     kernel=up_kernel)
+    #y_sr += imresize(y_lr - imresize(y_sr, scale=1.0/sf, output_shape=y_lr.shape, kernel=down_kernel, ds_method=ds_method),
+     #                scale=sf,
+      #               output_shape=y_sr.shape,
+       #              kernel=up_kernel)
+    y_sr += y_lr - y_sr
     return np.clip(y_sr, 0, 1)

@@ -3,6 +3,9 @@ import tensorflow as tf
 import imageio
 import numpy as np
 import math
+#
+#import tensorflow.compat.v1 as tf
+#tf.disable_v2_behavior()
 
 def imread(path):
     img = imageio.imread(path).astype(np.float32)
