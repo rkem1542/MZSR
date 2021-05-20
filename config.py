@@ -42,5 +42,5 @@ TASK_BATCH_SIZE=2
 TASK_LR=1e-2
 
 # Loading tfrecord and saving paths
-TFRECORD_PATH='/data3/sjyang/DIV2K/train_SR_MZSR.tfrecord'
-CHECKPOINT_DIR='/data3/sjyang/MZSR/MZSR_-interp_checkpoint/SR_MetaLearn'
+TFRECORD_PATH='/data3/sjyang/MZSR/tfrecord/MZSR_denoising_SIDD_metalearn.tfrecord'
+CHECKPOINT_DIR='/data3/sjyang/MZSR/MZSR_-interp_checkpoint/SR_MetaLearn_test_SIDD'

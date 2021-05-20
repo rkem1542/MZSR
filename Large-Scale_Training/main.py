@@ -37,8 +37,8 @@ def main():
 
     os.environ['CUDA_VISIBLE_DEVICES'] = options.gpu_num
 
-    NUM_OF_DATA = 1886472
-    TF_RECORD_PATH=['/data3/sjyang/DIV2K/train_MZSR_denoising_large_scale.tfrecord']
+    NUM_OF_DATA = 32768
+    TF_RECORD_PATH=['/data3/sjyang/MZSR/tfrecord/MZSR_denoising_SIDD_large_scale.tfrecord']
 
     Trainer=train.Train(trial=options.trial,step=options.global_step,size=[HEIGHT,WIDTH,CHANNEL], batch_size=BATCH_SIZE,
                         learning_rate=LEARNING_RATE, max_epoch=EPOCH,tfrecord_path=TF_RECORD_PATH,checkpoint_dir=CHECK_POINT_DIR,
